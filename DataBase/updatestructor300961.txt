@@ -1,0 +1,6 @@
+ALTER TABLE `lot_item` 
+ADD COLUMN `barcode` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci AFTER `item_amount`,
+ADD COLUMN `expire_date` date AFTER `barcode`;
+
+ALTER TABLE `lot_item` 
+ADD COLUMN `sell_price` decimal(10, 2) NOT NULL AFTER `item_amount`;

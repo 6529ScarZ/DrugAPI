@@ -1,0 +1,6 @@
+localhost
+root
+
+drugstore
+3306
+utf8
