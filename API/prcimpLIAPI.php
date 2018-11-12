@@ -54,6 +54,12 @@ if ($method == 'add_lotitem') {
         $add_lot_item = $connDB->insert($table, $data, $field);
 
         if($add_lot_item){
+            ///temporary lot item
+            $temp_data = array($add_lot_item,$item_amount[$value]);
+            $temp_field = array("li_id","item_amount");
+            $temp_table = "temp_lot_item";
+            $temp_lot_item = $connDB->insert($temp_table, $temp_data, $temp_field);
+            ///end temporary lot item
             $data2 = array($total_receive);
             $field = array("receive");
             $table2 = "drug_brand";
@@ -103,7 +109,14 @@ if ($method == 'add_lotitem') {
     $connDB->imp_sql($sql);
     $execute=array(':db_id' => $db_id);
     $receive=$connDB->select_a($execute);
-    $total_receive = (int) $item_amount + (int) $receive['receive'];
+    // $total_receive = (int) $item_amount + (int) $receive['receive'];
+    // $total_now = $total_receive - (int) $receive['sell'];
+
+    $sql = "select item_price,item_amount from lot_item where li_id= :li_id";
+    $connDB->imp_sql($sql);
+    $execute=array(':li_id' => $li_id);
+    $amount=$connDB->select_a($execute);
+    $total_receive = (int) $item_amount + ((int) $receive['receive']-$amount['item_amount']);
     $total_now = $total_receive - (int) $receive['sell'];
 
     $data = array($db_id,$item_price,$item_amount,$sell_price,$barcode,$expire_date,$total_now);
@@ -132,7 +145,7 @@ if ($method == 'add_lotitem') {
     $execute=array(':lot_id' => $lot_id);
     $chk_lot=$connDB->select_a($execute);
 
-    $lot_price = $chk_lot['lot_price']+$lot_price;
+    $lot_price = ($chk_lot['lot_price']-($amount['item_price']*$amount['item_amount'])+$lot_price);
     $lot_amount = $chk_lot['lot_amount'];
 
     $data3 = array($lot_price,$lot_amount);
