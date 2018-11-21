@@ -33,10 +33,11 @@ if ($method == 'add_brand') {
     $mash_sec = $_POST['mash_sec'];
     $mash_th = $_POST['mash_th'];
     $drug_kind = $_POST['drug_kind'];
+    $barcode = $_POST['barcode'];
     $max = $_POST['max'];
     $min = $_POST['min'];
     
-    $data = array($brand_name,$mash_pri,$mash_sec,$mash_th,$drug_kind,$max,$min);
+    $data = array($brand_name,$mash_pri,$mash_sec,$mash_th,$drug_kind,$barcode,$max,$min);
     $table = "drug_brand";
     $add_brand = $connDB->insert($table, $data);
     $connDB->close_PDO();
@@ -54,15 +55,23 @@ if ($method == 'add_brand') {
     $mash_sec = $_POST['mash_sec'];
     $mash_th = $_POST['mash_th'];
     $drug_kind = $_POST['drug_kind'];
+    $barcode = $_POST['barcode'];
     $max = $_POST['max'];
     $min = $_POST['min'];
-    $receive = $_POST['receive'];
     
-    $data = array($brand_name,$mash_pri,$mash_sec,$mash_th,$drug_kind,$max,$min,$receive);
+    
+    $data = array($brand_name,$mash_pri,$mash_sec,$mash_th,$drug_kind,$barcode,$max,$min);
+    $field = array("brand_name","mash_pri","mash_sec","mash_th","drug_kind","barcode","max","min");
     $table = "drug_brand";
     $where="db_id=:db_id";
+    if(isset($_POST['receive'])){
+        $receive = $_POST['receive'];
+        array_push($data,$receive);
+        array_push($field,"receive");
+    }
+    
     $execute=array(':db_id' => $db_id);
-    $edit_brand=$connDB->update($table, $data, $where, '', $execute);    
+    $edit_brand=$connDB->update($table, $data, $where, $field, $execute);    
     if ($edit_brand) {
         $res = array("messege"=>'แก้ไขยี่ห้อสำเร็จครับ!!!!');
 	    print json_encode($res);

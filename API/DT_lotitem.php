@@ -26,7 +26,7 @@ if(empty($data1)){
 } else {
     $code="WHERE li.lot_id=".$data1;
 }
-$sql = "SELECT li.li_id,db.brand_name,li.item_price,li.item_amount,li.sell_price,li.barcode,li.expire_date
+$sql = "SELECT li.li_id,db.brand_name,li.item_price,li.item_amount,li.sell_price,li.expire_date
 FROM lot_item li
 INNER JOIN drug_brand db on db.db_id=li.db_id ".$code;
 
@@ -38,7 +38,6 @@ for($i=0;$i<count($num_risk);$i++){
     $series['item_price'] = $num_risk[$i]['item_price'];
     $series['item_amount'] = $num_risk[$i]['item_amount'];
     $series['sell_price'] = $num_risk[$i]['sell_price'];
-    $series['barcode'] = $num_risk[$i]['barcode'];
     $series['expire_date'] = DateThai1($num_risk[$i]['expire_date']);
 array_push($rslt, $series);    
 }

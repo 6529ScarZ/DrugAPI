@@ -38,7 +38,6 @@ if ($method == 'add_lotitem') {
         $item_price[$value] = $_POST['item_price'][$value];
         $item_amount[$value] = $_POST['item_amount'][$value];
         $sell_price[$value] = $_POST['sell_price'][$value];
-        $barcode[$value] = $_POST['barcode'][$value];
         $expire_date[$value] = insert_date($_POST['expire_date'][$value]);
 
         $sql = "select receive,sell from drug_brand where db_id= :db_id";
@@ -48,8 +47,8 @@ if ($method == 'add_lotitem') {
         $total_receive = (int) $item_amount[$value] + (int) $receive['receive'];
         $total_now = $total_receive - (int) $receive['sell'];
 
-        $data = array($lot_id[$value],$db_id[$value],$item_price[$value],$item_amount[$value],$sell_price[$value],$barcode[$value],$expire_date[$value],$total_now);
-        $field = array("lot_id","db_id","item_price","item_amount","sell_price","barcode","expire_date","total_now");
+        $data = array($lot_id[$value],$db_id[$value],$item_price[$value],$item_amount[$value],$sell_price[$value],$expire_date[$value],$total_now);
+        $field = array("lot_id","db_id","item_price","item_amount","sell_price","expire_date","total_now");
         $table = "lot_item";
         $add_lot_item = $connDB->insert($table, $data, $field);
 
@@ -102,7 +101,6 @@ if ($method == 'add_lotitem') {
     $item_price = $_POST['item_price'];
     $item_amount = $_POST['item_amount'];
     $sell_price = $_POST['sell_price'];
-    $barcode = $_POST['barcode'];
     $expire_date = insert_date($_POST['expire_date']);
 
     $sql = "select receive,sell from drug_brand where db_id= :db_id";
@@ -119,8 +117,8 @@ if ($method == 'add_lotitem') {
     $total_receive = (int) $item_amount + ((int) $receive['receive']-$amount['item_amount']);
     $total_now = $total_receive - (int) $receive['sell'];
 
-    $data = array($db_id,$item_price,$item_amount,$sell_price,$barcode,$expire_date,$total_now);
-    $field = array("db_id","item_price","item_amount","sell_price","barcode","expire_date","total_now");
+    $data = array($db_id,$item_price,$item_amount,$sell_price,$expire_date,$total_now);
+    $field = array("db_id","item_price","item_amount","sell_price","expire_date","total_now");
     $table = "lot_item";
     $where="li_id=:li_id";
     $execute=array(':li_id' => $li_id);
