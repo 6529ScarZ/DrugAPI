@@ -21,7 +21,9 @@ $conn_DB->conn_PDO();
 //$rslt=array();
 $result=array();
 $data = isset($_GET['data'])?$_GET['data']:$_POST['data'];
-$sql="select * from lot_item WHERE barcode= :barcode group by barcode";
+$sql="SELECT * FROM lot_item li
+INNER JOIN drug_brand db on db.db_id=li.db_id
+WHERE db.barcode = :barcode group by barcode";
 $conn_DB->imp_sql($sql);
 $execute=array(':barcode' => $data);
 $result=$conn_DB->select_a($execute);
