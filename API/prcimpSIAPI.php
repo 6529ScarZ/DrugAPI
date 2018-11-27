@@ -29,67 +29,55 @@ function insert_date($take_date_conv) {
 $method = isset($_POST['method']) ? $_POST['method'] : $_GET['method'];
 if ($method == 'add_sellitem') {
         //$i=0;
-        $lot_price=0;
+        $sell_date = date('Y-m-d H:i:s');
+        $seller = $_POST['seller'];
+
+        $data = array($sell_date,0,0,$seller);
+        $table = "bill";
+        $bill_id = $connDB->insert($table, $data);
+    if($bill_id){
         $count = $_POST['count'];
         $lot_amount = count($count);
+        $bill_price = 0;
+        $bill_amount = 0;
      foreach ($count as $key => $value) {
         $db_id[$value] = $_POST['db_id'][$value];
         $sell_price[$value] = $_POST['sell_price'][$value];
         $sell_amount[$value] = $_POST['sell_amount'][$value];
-        $expire_date[$value] = insert_date($_POST['expire_date'][$value]);
 
-    //     $sql = "select receive,sell from drug_brand where db_id= :db_id";
-    //     $connDB->imp_sql($sql);
-    //     $execute=array(':db_id' => $db_id[$value]);
-    //     $receive=$connDB->select_a($execute);
-    //     $total_receive = (int) $item_amount[$value] + (int) $receive['receive'];
-    //     $total_now = $total_receive - (int) $receive['sell'];
+        $bill_price += $sell_price[$value];
+        $bill_amount += $sell_amount[$value];
 
-    //     $data = array($lot_id[$value],$db_id[$value],$item_price[$value],$item_amount[$value],$sell_price[$value],$expire_date[$value],$total_now);
-    //     $field = array("lot_id","db_id","item_price","item_amount","sell_price","expire_date","total_now");
-    //     $table = "lot_item";
-    //     $add_lot_item = $connDB->insert($table, $data, $field);
+        $sql = "select receive,sell from drug_brand where db_id= :db_id";
+        $connDB->imp_sql($sql);
+        $execute=array(':db_id' => $db_id[$value]);
+        $db_total=$connDB->select_a($execute);
+        $sell = (int)$db_total['sell']+(int)$sell_amount[$value];
+        $total_now = $db_total['receive']-$sell;
 
-    //     if($add_lot_item){
-    //         ///temporary lot item
-    //         $temp_data = array($add_lot_item,$item_amount[$value]);
-    //         $temp_field = array("li_id","item_amount");
-    //         $temp_table = "temp_lot_item";
-    //         $temp_lot_item = $connDB->insert($temp_table, $temp_data, $temp_field);
-    //         ///end temporary lot item
-    //         $data2 = array($total_receive);
-    //         $field = array("receive");
-    //         $table2 = "drug_brand";
-    //         $where="db_id=:db_id";
-    //         $execute2=array(':db_id' => $db_id[$value]);
-    //         $edit_drug_brand=$connDB->update($table2, $data2, $where, $field, $execute2); 
+        $data2 = array($bill_id,$db_id[$value],$total_now);
+        $field2 = array("bill_id","db_id","total_now");
+        $table2 = "bill_item";
+        $add_bill_item = $connDB->insert($table2, $data2, $field2);
 
-    //         $lot_price += $item_price[$value]*$item_amount[$value];
-    //     }
-    //     else if(!$add_lot_item){
-    //         $res = array("messege"=>'เพิ่มรายการไม่สำเร็จ!!!! '.$add_lot_item->errorInfo());
-	//         print json_encode($res);
-    //     }
-    //     //$i++;
-    //     $L_id = $lot_id[$value];
-    // }
-    //     $sql = "SELECT lot_price,lot_amount FROM lot WHERE lot_id= :lot_id";
-    //     $connDB->imp_sql($sql);
-    //     $execute=array(':lot_id' => $L_id);
-    //     $chk_lot=$connDB->select_a($execute);
-
-    //     $lot_price = $chk_lot['lot_price']+$lot_price;
-    //     $lot_amount = $chk_lot['lot_amount']+$lot_amount;
-
-    //     $data3 = array($lot_price,$lot_amount);
-    //     $field3 = array("lot_price","lot_amount");
-    //     $table3 = "lot";
-    //     $where3="lot_id=:lot_id";
-    //     $execute3=array(':lot_id' => $L_id);
-    //     $edit_lot=$connDB->update($table3, $data3, $where3, $field3, $execute3); 
-    $text = $db_id[0].'/'.$sell_price[0].'/'.$sell_amount[0].'/'.$expire_date[0];
+        $data3 = array($sell);
+        $field3 = array("sell");
+        $table3 = "drug_brand";
+        $where3="db_id=:db_id";
+        $execute3=array(':db_id' => $db_id[$value]);
+        $edit_drug_brand=$connDB->update($table3, $data3, $where3, $field3, $execute3); 
+     }
+     $data4 = array($bill_price,$bill_amount);
+     $field4 = array("bill_price","bill_amount");
+     $table4 = "bill";
+     $where4="bill_id=:bill_id";
+     $execute4=array(':bill_id' => $bill_id);
+     $edit_bill=$connDB->update($table4, $data4, $where4, $field4, $execute4);
+    
+        $res = array("messege"=>'ทำรายการขายสำเร็จ!!!!');
+    }else{
+        $res = array("messege"=>'ไม่สามารถทำรายการได้!!!!');
     }
-        $res = array("messege"=>'เพิ่มรายการสำเร็จ!!!!'.$text);
         print json_encode($res);
         $connDB->close_PDO();
 }elseif ($method == 'edit_lotitem') {
